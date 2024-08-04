@@ -143,7 +143,7 @@ export default function SignUpForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
-                  <Input {...field} name="email" />
+                  <Input {...field} name="email" type="email" />
                   <p className="text-muted text-gray-400 text-sm">
                     We will send you a verification code
                   </p>
