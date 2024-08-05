@@ -8,8 +8,6 @@ export async function POST(request: Request) {
 
   try {
     const { username, email, password } = await request.json();
-
-    // Check if username is taken
     const existingVerifiedUserByUsername = await UserModel.findOne({
       username,
       isVerified: true,
