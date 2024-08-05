@@ -13,14 +13,15 @@ import { useToast } from "@/components/ui/use-toast";
 import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { verifySchema } from "@/schemas/verifySchema";
 
 export default function VerifyAccount() {
   const router = useRouter();
-  const params = useParams<{ username: string }>();
+  const searchParams = useSearchParams();
+  const username = searchParams.get("username");
   const { toast } = useToast();
   const form = useForm<z.infer<typeof verifySchema>>({
     resolver: zodResolver(verifySchema),
@@ -29,7 +30,7 @@ export default function VerifyAccount() {
   const onSubmit = async (data: z.infer<typeof verifySchema>) => {
     try {
       const response = await axios.post<ApiResponse>(`/api/verify-code`, {
-        username: params.username,
+        username,
         code: data.code,
       });
 

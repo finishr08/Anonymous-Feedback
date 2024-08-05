@@ -2,18 +2,21 @@ import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
 
 export async function POST(request: Request) {
-  // Connect to the database
-  await dbConnect();
-
   try {
+    // Connect to the database
+    await dbConnect();
+
+    // Parse the request body
     const { username, code } = await request.json();
     const decodedUsername = decodeURIComponent(username);
+
+    // Find the user by username
     const user = await UserModel.findOne({ username: decodedUsername });
 
     if (!user) {
-      return Response.json(
-        { success: false, message: "User not found" },
-        { status: 404 }
+      return new Response(
+        JSON.stringify({ success: false, message: "User not found" }),
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -26,32 +29,38 @@ export async function POST(request: Request) {
       user.isVerified = true;
       await user.save();
 
-      return Response.json(
-        { success: true, message: "Account verified successfully" },
-        { status: 200 }
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Account verified successfully",
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } }
       );
     } else if (!isCodeNotExpired) {
       // Code has expired
-      return Response.json(
-        {
+      return new Response(
+        JSON.stringify({
           success: false,
           message:
             "Verification code has expired. Please sign up again to get a new code.",
-        },
-        { status: 400 }
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     } else {
       // Code is incorrect
-      return Response.json(
-        { success: false, message: "Incorrect verification code" },
-        { status: 400 }
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "Incorrect verification code",
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
   } catch (error) {
     console.error("Error verifying user:", error);
-    return Response.json(
-      { success: false, message: "Error verifying user" },
-      { status: 500 }
+    return new Response(
+      JSON.stringify({ success: false, message: "Error verifying user" }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }
